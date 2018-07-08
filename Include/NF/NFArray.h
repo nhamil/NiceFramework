@@ -60,40 +60,34 @@ NFulong NFArrayElemSize(NFArrayConstRef arr);
  * Gets elements of an array. 
  * 
  * @param data Output of array elements, or zeroed if invalid parameters 
- * @returns Whether operation was successful 
  */
-NFbool NFGetArray(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data); 
+NFvoid NFGetArray(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data); 
 
 /**
  * Sets elements of an array. 
  * 
  * @param data Input for array elements, can be NULL 
- * @returns Whether operation was successful 
  */
-NFbool NFSetArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
+NFvoid NFSetArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
 
 /**
  * Appends elements to the end of an array. 
  * 
  * @param data Input for array elements, can be NULL 
- * @returns Whether operation was successful 
  */
-NFbool NFAppendArray(NFArrayRef arr, NFuint count, const NFvoid *data); 
+NFvoid NFAppendArray(NFArrayRef arr, NFuint count, const NFvoid *data); 
 
 /**
  * Inserts elements into an array. 
  * 
  * @param data Input for array elements, can be NULL 
- * @returns Whether operation was successful 
  */
-NFbool NFInsertArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
+NFvoid NFInsertArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
 
 /**
  * Removes elements from an array. 
- * 
- * @returns Whether operation was successful 
  */
-NFbool NFRemoveArray(NFArrayRef arr, NFuint index, NFuint count); 
+NFvoid NFRemoveArray(NFArrayRef arr, NFuint index, NFuint count); 
 
 NF_EXTERN_C_FINISH 
 

@@ -1,4 +1,5 @@
 #include <NF/NFArray.h> 
+#include <NF/NFError.h> 
 
 #include <stdio.h> 
 

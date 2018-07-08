@@ -9,14 +9,15 @@ set(SOURCES
     ${SOURCE_FOLDER}/main.c 
 
     ${SOURCE_FOLDER}/NF/NFArray.c 
+    ${SOURCE_FOLDER}/NF/NFError.c 
     ${SOURCE_FOLDER}/NF/NFMemory.c
 )
 
 include_directories(Include) 
 include_directories(Source) 
 
-set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -g -std=ansi")
+set(CMAKE_C_FLAGS_DEBUG     "${CMAKE_C_FLAGS_DEBUG} -Wall -Wextra -g -ansi")
 
-set(CMAKE_C_FLAGS_RELEASE     "${CMAKE_C_FLAGS_RELEASE} -Wall -O2 -std=ansi")
+set(CMAKE_C_FLAGS_RELEASE     "${CMAKE_C_FLAGS_RELEASE} -Wall -O2 -ansi")
 
 add_executable(${APP_NAME} ${SOURCES})

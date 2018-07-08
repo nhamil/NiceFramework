@@ -4,7 +4,6 @@
 #define NF_COMMON_H 
 
 #include <stdint.h> 
-#include <stdlib.h> 
 
 #ifdef __cplusplus 
 #define NF_EXTERN_C_BEGIN extern "C" { 
@@ -16,6 +15,9 @@
 
 #define NF_RETURN_ON_FAIL(x) if (!(x)) return; 
 #define NF_RETURN_VAL_ON_FAIL(x, val) if (!(x)) return val; 
+
+#define NF_ASSERT(x) if (!(x)) { NFFatalError(NF_ASSERTION_FAILED); return; }
+#define NF_ASSERT_VAL(x, val) if (!(x)) { NFFatalError(NF_ASSERTION_FAILED); return val; }
 
 NF_EXTERN_C_BEGIN 
 
@@ -39,6 +41,10 @@ typedef double NFdouble;
 
 typedef void NFvoid; 
 
+#define NULL (NFvoid *) 
+
 NF_EXTERN_C_FINISH 
+
+#include "NF/NFError.h" 
 
 #endif 

@@ -1,5 +1,7 @@
 #include "NF/NFMemory.h" 
 
+#include "NF/NFError.h" 
+
 #include <stdlib.h> 
 #include <string.h> 
 
@@ -27,20 +29,50 @@ NFvoid NFMoveMemory(NFvoid *to, const NFvoid *from, NFulong size)
 
 NFvoid *NFMalloc(NFulong num, NFulong size) 
 {
-    return malloc(num * size); 
+    NFvoid *mem = malloc(num * size); 
+
+    if (mem) 
+    {
+        return mem; 
+    }
+    else 
+    {
+        NFFatalError(NF_OUT_OF_MEMORY); 
+        return NULL; 
+    }
 }
 
 NFvoid* NFCalloc(NFulong num, NFulong size) 
 {
-    return calloc(num, size); 
+    NFvoid *newMem = calloc(num, size); 
+
+    if (newMem) 
+    {
+        return newMem; 
+    }
+    else 
+    {
+        NFFatalError(NF_OUT_OF_MEMORY); 
+        return NULL; 
+    }
 } 
 
 NFvoid* NFRealloc(NFvoid* mem, NFulong num, NFulong size) 
 {
-    return realloc(mem, num * size); 
+    NFvoid *newMem = realloc(mem, num * size); 
+
+    if (newMem) 
+    {
+        return newMem; 
+    }
+    else 
+    {
+        NFFatalError(NF_OUT_OF_MEMORY); 
+        return NULL; 
+    }
 }
 
 NFvoid NFFree(NFvoid *mem) 
 {
-    free(mem); 
+    if (mem) free(mem); 
 }
