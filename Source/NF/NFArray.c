@@ -10,9 +10,22 @@ struct NFArray
     NFuint capacity; 
 };
 
-static NFulong ArrayOffset(NFArrayConstRef arr, NFuint index) 
+static inline NFulong ArrayOffset(NFArrayConstRef arr, NFuint index) 
 {
     return arr->elemSize * index; 
+}
+
+static NFvoid ReserveArray(NFArrayRef arr, NFuint minSize) 
+{
+    NFuint cap = arr->capacity; 
+
+    while (cap < minSize) cap *= 2; 
+
+    if (cap != arr->capacity) 
+    {
+        arr->capacity = cap; 
+        arr->data = NFRealloc(arr->data, cap, arr->elemSize); 
+    }
 }
 
 static NFvoid ResizeArray(NFArrayRef arr, NFuint newSize, NFbool zero) 
@@ -22,22 +35,13 @@ static NFvoid ResizeArray(NFArrayRef arr, NFuint newSize, NFbool zero)
     if (arr->size > newSize) 
     {
         arr->size = newSize; 
-
-        // TODO 
-        // if (zero) NFZeroMemory(arr->data + ArrayOffset())
+        return; 
     }
 
-    NFuint cap = arr->capacity; 
+    ReserveArray(arr, newSize); 
+    arr->size = newSize; 
 
-    while (cap < newSize) cap *= 2; 
-
-    arr->capacity = cap; 
-    arr->data = NFRealloc(arr->data, cap, arr->elemSize); 
-
-    if (zero) 
-    {
-        NFZeroMemory(arr->data + ArrayOffset(arr, arr->size), ArrayOffset(arr, newSize - arr->size)) 
-    }
+    if (zero) NFZeroMemory(arr->data + ArrayOffset(arr, arr->size), ArrayOffset(arr, newSize - arr->size)); 
 }
 
 NFArrayRef NFCreateArray(NFulong elemSize, NFuint count, const NFvoid *data) 
@@ -76,38 +80,79 @@ NFulong NFArrayElemSize(NFArrayConstRef arr)
 
 NFbool NFGetArray(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data) 
 {
-    NF_RETURN_VAL_ON_FAIL(arr, NF_FALSE); 
-    NF_RETURN_VAL_ON_FAIL(data, NF_FALSE); 
-    NF_RETURN_VAL_ON_FAIL(index + count < arr->size, NF_FALSE); 
+    if (!arr || !arr->data || index + count > arr->size) 
+    {
+        NFZeroMemory(data, count * arr->elemSize); 
+        return NF_FALSE; 
+    }
 
     if (count) 
     {
         NFCopyMemory(data, arr->data + ArrayOffset(arr, index), ArrayOffset(arr, count)); 
     }
-    else 
-    {
-        NFZeroMemory(data, ArrayOffset(arr, count)); 
-    }
 
     return NF_TRUE; 
 }
 
-NFvoid NFSetArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
+NFbool NFSetArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
 {
-    // TODO 
+    NF_RETURN_VAL_ON_FAIL(arr && arr->data && count && index <= arr->size, NF_FALSE); 
+
+    if (arr->size < index + count) ResizeArray(arr, index + count, NF_FALSE); 
+
+    NFCopyMemory(arr->data + ArrayOffset(arr, index), data, ArrayOffset(arr, count)); 
+
+    return NF_TRUE; 
 } 
 
-NFvoid NFAppendArray(NFArrayRef arr, NFuint count, const NFvoid *data) 
+NFbool NFAppendArray(NFArrayRef arr, NFuint count, const NFvoid *data) 
 {
-    // TODO 
+    NFuint oldSize; 
+
+    NF_RETURN_VAL_ON_FAIL(arr && count, NF_FALSE); 
+
+    oldSize = arr->size; 
+
+    ResizeArray(arr, arr->size + count, NF_FALSE); 
+    NF_RETURN_VAL_ON_FAIL(arr->data, NF_FALSE); 
+
+    NFCopyMemory(arr->data + ArrayOffset(arr, oldSize), data, ArrayOffset(arr, count)); 
+
+    return NF_TRUE; 
 } 
 
-NFvoid NFInsertArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
+NFbool NFInsertArray(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
 {
-    // TODO 
+    NF_RETURN_VAL_ON_FAIL(arr && arr->data && count && index <= arr->size, NF_FALSE); 
+
+    ResizeArray(arr, arr->size + count, NF_FALSE); 
+    NF_RETURN_VAL_ON_FAIL(arr->data, NF_FALSE); 
+
+    if (index < arr->size) 
+    {
+        // move values 
+        NFMoveMemory(arr->data + ArrayOffset(arr, index + count), arr->data + ArrayOffset(arr, index), ArrayOffset(arr, arr->size - index - count)); 
+        NFCopyMemory(arr->data + ArrayOffset(arr, index), data, ArrayOffset(arr, count)); 
+
+        return NF_TRUE; 
+    }
+    else 
+    {
+        // append values 
+        return NFAppendArray(arr, count, data); 
+    }
 } 
 
-NFvoid NFRemoveArray(NFArrayRef arr, NFuint index, NFuint count) 
+NFbool NFRemoveArray(NFArrayRef arr, NFuint index, NFuint count) 
 {
-    // TODO 
+    NFuint oldSize; 
+
+    NF_RETURN_VAL_ON_FAIL(arr && arr->data && count && index + count <= arr->size, NF_FALSE); 
+
+    oldSize = arr->size; 
+    arr->size -= count; 
+
+    NFMoveMemory(arr->data + ArrayOffset(arr, index), arr->data + ArrayOffset(arr, index + count), ArrayOffset(arr, count)); 
+
+    return NF_TRUE; 
 } 

@@ -14,8 +14,8 @@
 #define NF_EXTERN_C_FINISH 
 #endif 
 
-#define NF_RETURN_ON_FAIL(x) if (!x) return; 
-#define NF_RETURN_VAL_ON_FAIL(x, val) if (!x) return val; 
+#define NF_RETURN_ON_FAIL(x) if (!(x)) return; 
+#define NF_RETURN_VAL_ON_FAIL(x, val) if (!(x)) return val; 
 
 NF_EXTERN_C_BEGIN 
 

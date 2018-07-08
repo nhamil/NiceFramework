@@ -10,7 +10,19 @@ NFvoid NFZeroMemory(NFvoid* mem, NFulong size)
 
 NFvoid NFCopyMemory(NFvoid *to, const NFvoid *from, NFulong size) 
 {
-    memcpy(to, from, size); 
+    if (from) 
+    {
+        memcpy(to, from, size); 
+    }
+    else 
+    {
+        memset(to, 0, size); 
+    }
+}
+
+NFvoid NFMoveMemory(NFvoid *to, const NFvoid *from, NFulong size) 
+{
+    memmove(to, from, size); 
 }
 
 NFvoid *NFMalloc(NFulong num, NFulong size) 
