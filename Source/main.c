@@ -201,6 +201,27 @@ int StringTest(void)
 
     printf("%s\n", NFStringCString(str)); 
 
+    {
+        NFStringRef split = NFStringCreate(" "); 
+        NFArrayRef list = NFStringSplit(str, split); 
+        NFStringDestroy(split); 
+
+        NFuint i; 
+        printf("["); 
+        for (i = 0; i < NFArraySize(list); i++) 
+        {
+            if (i != 0) printf(", "); 
+            
+            NFStringRef *s = NFArrayGetRef(list, i); 
+            printf("%s", NFStringCString(*s)); 
+
+            NFStringDestroy(*s); 
+        }
+        printf("]\n"); 
+
+        NFArrayDestroy(list); 
+    }
+
     NFStringDestroy(str); 
     NFStringDestroy(substr); 
 }

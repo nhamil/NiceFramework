@@ -4,6 +4,7 @@
 #define NF_STRING_H 
 
 #include "NF/NFCommon.h" 
+#include "NF/NFArray.h" 
 
 typedef struct NFString *NFStringRef; 
 
@@ -34,6 +35,8 @@ NFbool NFStringStartsWith(NFStringConstRef str, NFStringConstRef start);
 NFbool NFStringEndsWith(NFStringConstRef str, NFStringConstRef end); 
 
 NFuint NFStringIndexOf(NFStringConstRef str, NFStringConstRef find, NFbool *found); 
+
+NFArrayRef NFStringSplit(NFStringConstRef str, NFStringConstRef split); 
 
 NFvoid NFStringAppend(NFStringRef str, NFStringConstRef other); 
 

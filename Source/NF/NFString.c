@@ -280,3 +280,31 @@ NFvoid NFStringReplace(NFStringRef str, NFStringConstRef what, NFStringConstRef 
         }
     }
 }
+
+NFArrayRef NFStringSplit(NFStringConstRef str, NFStringConstRef split) 
+{
+    NF_ASSERT_VAL(str, NULL); 
+    NF_ASSERT_VAL(split, NULL); 
+
+    NFArrayRef list = NFArrayCreateOf(NFStringRef); 
+
+    NFuint i; 
+    NFuint nextSplit = 0; 
+    for (i = 0; i < str->size; i++) 
+    {
+        if (StringEquals(split->size, i, str->string, 0, split->string)) 
+        {
+            NFStringRef s = NFStringCreateSubstring(str, nextSplit, i - nextSplit); 
+            NFArrayAppend(list, &s); 
+            nextSplit = i + 1; 
+        }
+    }
+
+    if (nextSplit != i) 
+    {
+        NFStringRef s = NFStringCreateSubstring(str, nextSplit, str->size - nextSplit); 
+        NFArrayAppend(list, &s); 
+    }
+
+    return list; 
+}
