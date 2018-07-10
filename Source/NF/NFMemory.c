@@ -27,6 +27,11 @@ NFvoid NFMoveMemory(NFvoid *to, const NFvoid *from, NFulong size)
     memmove(to, from, size); 
 }
 
+NFint NFCompareMemory(const NFvoid *a, const NFvoid *b, NFulong size) 
+{
+    return memcmp(a, b, size); 
+}
+
 NFvoid *NFMalloc(NFulong num, NFulong size) 
 {
     NFvoid *mem = malloc(num * size); 

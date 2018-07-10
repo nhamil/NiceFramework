@@ -10,6 +10,7 @@ set(SOURCES
 
     ${SOURCE_FOLDER}/NF/NFArray.c 
     ${SOURCE_FOLDER}/NF/NFError.c 
+    ${SOURCE_FOLDER}/NF/NFHashTable.c 
     ${SOURCE_FOLDER}/NF/NFMemory.c
 )
 

@@ -1,54 +1,110 @@
 #include <NF/NFArray.h> 
 #include <NF/NFError.h> 
+#include <NF/NFHashTable.h> 
 
 #include <stdio.h> 
 
+int ArrayTest(void); 
+int HashTableTest(void); 
+
+int main(int argc, char **argv) 
+{
+    return ArrayTest(); 
+}
+
 void PrintArray(NFArrayConstRef list) 
 {
-    NFuint i, value, size = NFArraySize(list); 
+    const NFuint *value; 
+    NFuint i, size = NFArraySize(list); 
     printf("NFArray = ["); 
     for (i = 0; i < size; i++) 
     {
         if (i) printf(", "); 
-        NFGetArray(list, i, &value); 
-        printf("%d", value); 
+        value = NFArrayGetConstRef(list, i); 
+        printf("%d", *value); 
     }
     printf("]\n"); 
 }
 
-int main(int argc, char **argv) 
+int ArrayTest(void) 
 {
     NFArrayRef list; 
     NFint i; 
 
-    list = NFCreateArrayOf(NFint);  
+    list = NFArrayCreateOf(NFint);  
 
     for (i = 0; i < 9; i++) 
     {
-        NFAppendArray(list, &i); 
+        NFArrayAppend(list, &i); 
     }
 
     // 0, 1, 2, 3, 4, 5, 6, 7, 8 
     PrintArray(list); 
 
     NFint arr[] = { 9, 0 }; 
-    NFInsertArrayRange(list, 3, 2, arr); 
+    NFArrayInsertRange(list, 3, 2, arr); 
 
     // 0, 1, 2, 9, 0, 3, 4, 5, 6, 7, 8 
     PrintArray(list); 
 
     i = 1; 
-    NFSetArray(list, 6, &i); 
+    NFArraySet(list, 6, &i); 
 
     // 0, 1, 2, 9, 0, 3, 1, 5, 6, 7, 8 
     PrintArray(list); 
 
-    NFRemoveArrayRange(list, 7, 3); 
+    NFArrayRemoveRange(list, 7, 3); 
 
     // 0, 1, 2, 9, 0, 3, 1, 8 
     PrintArray(list); 
 
-    NFDestroyArray(list); 
+    NFArrayDestroy(list); 
 
     return 0; 
 }
+
+#if 0 
+void PrintHashTableEntry(NFHashTableConstRef map, int key) 
+{
+    int value = -1; 
+    NFbool valid = NFGetHashTable(map, &key, &value); 
+
+    printf("%d : ", key); 
+
+    if (valid) 
+    {
+        printf("%d\n", value); 
+    }
+    else 
+    {
+        printf("invalid\n"); 
+    }
+}
+
+int HashTableTest(void) 
+{
+    NFHashTableRef map = NFCreateHashTable(sizeof (int), sizeof (int), NULL, NULL); 
+
+    NFint key, value; 
+    NFbool valid; 
+
+    // put 
+
+    key = 123; 
+    value = 321; 
+    NFPutHashTable(map, &key, &value); 
+
+    key = 12; 
+    value = 144; 
+    NFPutHashTable(map, &key, &value); 
+
+    // get 
+
+    PrintHashTableEntry(map, 1); 
+    PrintHashTableEntry(map, 12); 
+    PrintHashTableEntry(map, 122); 
+    PrintHashTableEntry(map, 123); 
+    
+    NFDestroyHashTable(map); 
+}
+#endif 

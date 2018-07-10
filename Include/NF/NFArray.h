@@ -8,13 +8,13 @@
 /**
  * Shorthand for creating an array of type [type] 
  */ 
-#define NFCreateArrayOf(type) NFCreateArray(sizeof (type), 0, NULL) 
+#define NFArrayCreateOf(type) NFArrayCreate(sizeof (type), 0, NULL) 
 
 /** 
  * Shorthand for creating an array of type [type] 
  * with initial data 
  */ 
-#define NFCreateAndSetArrayOf(type, count, data) NFCreateArray(sizeof (type), count, data) 
+#define NFArrayCreateAndSetOf(type, count, data) NFArrayCreate(sizeof (type), count, data) 
 
 NF_EXTERN_C_BEGIN 
 
@@ -35,12 +35,12 @@ typedef const struct NFArray *NFArrayConstRef;
  * @param count Number of starting elements 
  * @param data Starting data, will be zeroed if NULL 
  */
-NFArrayRef NFCreateArray(NFulong elemSize, NFuint count, const NFvoid *data); 
+NFArrayRef NFArrayCreate(NFulong elemSize, NFuint count, const NFvoid *data); 
 
 /**
  * Destroys an array 
  */ 
-NFvoid NFDestroyArray(NFArrayRef arr); 
+NFvoid NFArrayDestroy(NFArrayRef arr); 
 
 /**
  * Gets the size of an array. 
@@ -61,66 +61,76 @@ NFulong NFArrayElemSize(NFArrayConstRef arr);
  * 
  * @param data Output of array elements
  */
-#define NFGetArray(arr, index, data) NFGetArrayRange(arr, index, 1, data) 
+#define NFArrayGet(arr, index, data) NFArrayGetRange(arr, index, 1, data) 
 
 /**
  * Gets elements of an array. 
  * 
  * @param data Output of array elements
  */
-NFvoid NFGetArrayRange(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data); 
+NFvoid NFArrayGetRange(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data); 
+
+/**
+ * Gets reference to array index 
+ */
+NFvoid *NFArrayGetRef(NFArrayRef arr, NFuint index); 
+
+/** 
+ * Gets constant reference to array index 
+ */ 
+const NFvoid *NFArrayGetConstRef(NFArrayConstRef arr, NFuint index); 
 
 /**
  * Sets an element of an array. 
  * 
  * @param data Input for array elements, can be NULL 
  */
-#define NFSetArray(arr, index, data) NFSetArrayRange(arr, index, 1, data) 
+#define NFArraySet(arr, index, data) NFArraySetRange(arr, index, 1, data) 
 
 /**
  * Sets elements of an array. 
  * 
  * @param data Input for array elements, can be NULL 
  */
-NFvoid NFSetArrayRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
+NFvoid NFArraySetRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
 
 /**
  * Appends an element to the end of an array. 
  * 
  * @param data Input for array elements, can be NULL 
  */
-#define NFAppendArray(arr, data) NFAppendArrayRange(arr, 1, data) 
+#define NFArrayAppend(arr, data) NFArrayAppendRange(arr, 1, data) 
 
 /**
  * Appends elements to the end of an array. 
  * 
  * @param data Input for array elements, can be NULL 
  */
-NFvoid NFAppendArrayRange(NFArrayRef arr, NFuint count, const NFvoid *data); 
+NFvoid NFArrayAppendRange(NFArrayRef arr, NFuint count, const NFvoid *data); 
 
 /**
  * Inserts an element into an array. 
  * 
  * @param data Input for array elements, can be NULL 
  */
-#define NFInsertArray(arr, index, data) NFInsertArrayRange(arr, index, 1, data) 
+#define NFArrayInsert(arr, index, data) NFArrayInsertRange(arr, index, 1, data) 
 
 /**
  * Inserts elements into an array. 
  * 
  * @param data Input for array elements, can be NULL 
  */
-NFvoid NFInsertArrayRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
+NFvoid NFArrayInsertRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data); 
 
 /**
  * Removes an element from an array. 
  */
-#define NFRemoveArray(arr, index) NFRemoveArrayRange(arr, index, 1) 
+#define NFArrayRemove(arr, index) NFArrayRemoveRange(arr, index, 1) 
 
 /**
  * Removes elements from an array. 
  */
-NFvoid NFRemoveArrayRange(NFArrayRef arr, NFuint index, NFuint count); 
+NFvoid NFArrayRemoveRange(NFArrayRef arr, NFuint index, NFuint count); 
 
 NF_EXTERN_C_FINISH 
 

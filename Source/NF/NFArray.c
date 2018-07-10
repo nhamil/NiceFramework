@@ -15,7 +15,7 @@ static inline NFulong ArrayOffset(NFArrayConstRef arr, NFuint index)
     return arr->elemSize * index; 
 }
 
-static NFvoid ReserveArray(NFArrayRef arr, NFuint minSize) 
+static NFvoid ArrayReserve(NFArrayRef arr, NFuint minSize) 
 {
     NFuint cap = arr->capacity; 
 
@@ -28,7 +28,7 @@ static NFvoid ReserveArray(NFArrayRef arr, NFuint minSize)
     }
 }
 
-static NFvoid ResizeArray(NFArrayRef arr, NFuint newSize, NFbool zero) 
+static NFvoid ArrayResize(NFArrayRef arr, NFuint newSize, NFbool zero) 
 {
     if (arr->size == newSize) return; 
 
@@ -38,13 +38,13 @@ static NFvoid ResizeArray(NFArrayRef arr, NFuint newSize, NFbool zero)
         return; 
     }
 
-    ReserveArray(arr, newSize); 
+    ArrayReserve(arr, newSize); 
     arr->size = newSize; 
 
     if (zero) NFZeroMemory(arr->data + ArrayOffset(arr, arr->size), ArrayOffset(arr, newSize - arr->size)); 
 }
 
-NFArrayRef NFCreateArray(NFulong elemSize, NFuint count, const NFvoid *data) 
+NFArrayRef NFArrayCreate(NFulong elemSize, NFuint count, const NFvoid *data) 
 {
     NFArrayRef arr = NFNewStruct(1, NFArray); 
 
@@ -53,12 +53,12 @@ NFArrayRef NFCreateArray(NFulong elemSize, NFuint count, const NFvoid *data)
     arr->capacity = 10; 
     arr->data = NFCalloc(10, elemSize); 
 
-    if (count) NFAppendArrayRange(arr, count, data); 
+    if (count) NFArrayAppendRange(arr, count, data); 
 
     return arr; 
 } 
 
-NFvoid NFDestroyArray(NFArrayRef arr) 
+NFvoid NFArrayDestroy(NFArrayRef arr) 
 {
     NFFree(arr->data); 
     NFFree(arr); 
@@ -78,7 +78,7 @@ NFulong NFArrayElemSize(NFArrayConstRef arr)
     return arr->elemSize; 
 }
 
-NFvoid NFGetArrayRange(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data) 
+NFvoid NFArrayGetRange(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *data) 
 {
     NF_ASSERT(arr); 
     NF_ASSERT(index + count <= arr->size); 
@@ -87,18 +87,34 @@ NFvoid NFGetArrayRange(NFArrayConstRef arr, NFuint index, NFuint count, NFvoid *
     NFCopyMemory(data, arr->data + ArrayOffset(arr, index), ArrayOffset(arr, count)); 
 }
 
-NFvoid NFSetArrayRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
+NFvoid *NFArrayGetRef(NFArrayRef arr, NFuint index) 
+{
+    NF_ASSERT_VAL(arr, NULL); 
+    NF_ASSERT_VAL(index < arr->size, NULL); 
+
+    return arr->data + ArrayOffset(arr, index); 
+}
+
+const NFvoid *NFArrayGetConstRef(NFArrayConstRef arr, NFuint index) 
+{
+    NF_ASSERT_VAL(arr, NULL); 
+    NF_ASSERT_VAL(index < arr->size, NULL); 
+
+    return arr->data + ArrayOffset(arr, index); 
+}
+
+NFvoid NFArraySetRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
 {
     NF_ASSERT(arr); 
     NF_ASSERT(index <= arr->size); 
     NF_RETURN_ON_FAIL(count); 
     
-    if (arr->size < index + count) ResizeArray(arr, index + count, NF_FALSE); 
+    if (arr->size < index + count) ArrayResize(arr, index + count, NF_FALSE); 
 
     NFCopyMemory(arr->data + ArrayOffset(arr, index), data, ArrayOffset(arr, count)); 
 } 
 
-NFvoid NFAppendArrayRange(NFArrayRef arr, NFuint count, const NFvoid *data) 
+NFvoid NFArrayAppendRange(NFArrayRef arr, NFuint count, const NFvoid *data) 
 {
     NFuint oldSize; 
 
@@ -107,17 +123,17 @@ NFvoid NFAppendArrayRange(NFArrayRef arr, NFuint count, const NFvoid *data)
 
     oldSize = arr->size; 
 
-    ResizeArray(arr, arr->size + count, NF_FALSE); 
+    ArrayResize(arr, arr->size + count, NF_FALSE); 
     NFCopyMemory(arr->data + ArrayOffset(arr, oldSize), data, ArrayOffset(arr, count)); 
 } 
 
-NFvoid NFInsertArrayRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
+NFvoid NFArrayInsertRange(NFArrayRef arr, NFuint index, NFuint count, const NFvoid *data) 
 {
     NF_ASSERT(arr); 
     NF_ASSERT(index <= arr->size); 
     NF_RETURN_ON_FAIL(count); 
     
-    ResizeArray(arr, arr->size + count, NF_FALSE); 
+    ArrayResize(arr, arr->size + count, NF_FALSE); 
 
     if (index < arr->size) 
     {
@@ -128,11 +144,11 @@ NFvoid NFInsertArrayRange(NFArrayRef arr, NFuint index, NFuint count, const NFvo
     else 
     {
         // append values 
-        NFAppendArrayRange(arr, count, data); 
+        NFArrayAppendRange(arr, count, data); 
     }
 } 
 
-NFvoid NFRemoveArrayRange(NFArrayRef arr, NFuint index, NFuint count) 
+NFvoid NFArrayRemoveRange(NFArrayRef arr, NFuint index, NFuint count) 
 {
     NFuint oldSize; 
 

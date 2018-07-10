@@ -41,7 +41,7 @@ typedef double NFdouble;
 
 typedef void NFvoid; 
 
-#define NULL (NFvoid *) 
+#define NULL ((NFvoid *) 0) 
 
 NF_EXTERN_C_FINISH 
 

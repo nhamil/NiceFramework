@@ -15,6 +15,8 @@ NFvoid NFCopyMemory(NFvoid *to, const NFvoid *from, NFulong size);
 
 NFvoid NFMoveMemory(NFvoid *to, const NFvoid *from, NFulong size); 
 
+NFint NFCompareMemory(const NFvoid *a, const NFvoid *b, NFulong size); 
+
 NFvoid *NFMalloc(NFulong num, NFulong size); 
 
 NFvoid *NFCalloc(NFulong num, NFulong size); 
