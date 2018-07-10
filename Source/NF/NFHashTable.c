@@ -209,7 +209,6 @@ NFbool NFHashTableGet(NFHashTableConstRef table, const NFvoid *key, NFvoid *valu
     {
         if (GetEqual(table, entry->key, key)) 
         {
-            printf("(%8x, %d, %d) ", hash, bIndex, multi); 
             if (value) NFCopyMemory(value, entry->value, table->valueSize); 
             return NF_TRUE; 
         }
