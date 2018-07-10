@@ -9,7 +9,7 @@ int HashTableTest(void);
 
 int main(int argc, char **argv) 
 {
-    return ArrayTest(); 
+    return HashTableTest(); 
 }
 
 void PrintArray(NFArrayConstRef list) 
@@ -63,27 +63,25 @@ int ArrayTest(void)
     return 0; 
 }
 
-#if 0 
-void PrintHashTableEntry(NFHashTableConstRef map, int key) 
+void PrintHashTableEntry(NFHashTableConstRef table, int key) 
 {
     int value = -1; 
-    NFbool valid = NFGetHashTable(map, &key, &value); 
 
     printf("%d : ", key); 
 
-    if (valid) 
+    if (NFHashTableGet(table, &key, &value)) 
     {
         printf("%d\n", value); 
     }
     else 
     {
-        printf("invalid\n"); 
+        printf("null\n"); 
     }
 }
 
 int HashTableTest(void) 
 {
-    NFHashTableRef map = NFCreateHashTable(sizeof (int), sizeof (int), NULL, NULL); 
+    NFHashTableRef table = NFHashTableCreate(sizeof (int), sizeof (int), NULL, NULL); 
 
     NFint key, value; 
     NFbool valid; 
@@ -92,19 +90,62 @@ int HashTableTest(void)
 
     key = 123; 
     value = 321; 
-    NFPutHashTable(map, &key, &value); 
+    NFHashTablePut(table, &key, &value); 
 
     key = 12; 
     value = 144; 
-    NFPutHashTable(map, &key, &value); 
+    NFHashTablePut(table, &key, &value); 
+
+    key = 123; 
+    value = 4321; 
+    NFHashTablePut(table, &key, &value); 
+
+    printf("Buckets: %d, Load Factor: %f\n", NFHashTableBucketCount(table), NFHashTableLoadFactor(table)); 
 
     // get 
 
-    PrintHashTableEntry(map, 1); 
-    PrintHashTableEntry(map, 12); 
-    PrintHashTableEntry(map, 122); 
-    PrintHashTableEntry(map, 123); 
+    PrintHashTableEntry(table, 1); 
+    PrintHashTableEntry(table, 12); 
+    PrintHashTableEntry(table, 122); 
+    PrintHashTableEntry(table, 123); 
+
+    printf("==========\n"); 
+
+    // remove 
+
+    key = 12; 
+    NFHashTableRemove(table, &key); 
+
+    key = 0; 
+    NFHashTableRemove(table, &key); 
+
+    printf("Buckets: %d, Load Factor: %f\n", NFHashTableBucketCount(table), NFHashTableLoadFactor(table)); 
+
+    PrintHashTableEntry(table, 1); 
+    PrintHashTableEntry(table, 12); 
+    PrintHashTableEntry(table, 122); 
+    PrintHashTableEntry(table, 123); 
     
-    NFDestroyHashTable(map); 
+    printf("==========\n"); 
+
+    printf("Putting values...\n"); 
+
+    int i; 
+    for (i = 0; i < 3000000; i++) 
+    {
+        value = i * 2 + 1; 
+        NFHashTablePut(table, &i, &value); 
+    }
+
+    printf("Done!\n"); 
+
+    printf("Buckets: %d, Load Factor: %f\n", NFHashTableBucketCount(table), NFHashTableLoadFactor(table)); 
+
+    for (i = 0; i < 10; i++) PrintHashTableEntry(table, i); 
+
+    PrintHashTableEntry(table, 12); 
+    PrintHashTableEntry(table, 122); 
+    PrintHashTableEntry(table, 123); 
+
+    NFHashTableDestroy(table); 
 }
-#endif 

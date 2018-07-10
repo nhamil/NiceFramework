@@ -12,12 +12,18 @@ typedef const struct NFHashTable *NFHashTableConstRef;
 
 NFHashTableRef NFHashTableCreate(NFulong keySize, NFulong valueSize, NFEqualFunc equalFunc, NFHashFunc hashFunc); 
 
-NFvoid NFHashTableDestroy(NFHashTableRef map); 
+NFvoid NFHashTableDestroy(NFHashTableRef table); 
 
-NFbool NFHashTableGet(NFHashTableConstRef map, const NFvoid *key, NFvoid *value); 
+NFuint NFHashTableSize(NFHashTableConstRef table); 
 
-NFvoid NFHashTablePut(NFHashTableRef map, const NFvoid *key, const NFvoid *value); 
+NFdouble NFHashTableLoadFactor(NFHashTableConstRef table); 
 
-NFvoid NFHashTableRemove(NFHashTableRef map, const NFvoid *key); 
+NFuint NFHashTableBucketCount(NFHashTableConstRef table); 
+
+NFbool NFHashTableGet(NFHashTableConstRef table, const NFvoid *key, NFvoid *value); 
+
+NFvoid NFHashTablePut(NFHashTableRef table, const NFvoid *key, const NFvoid *value); 
+
+NFvoid NFHashTableRemove(NFHashTableRef table, const NFvoid *key); 
 
 #endif 
