@@ -12,6 +12,7 @@ set(SOURCES
     ${SOURCE_FOLDER}/NF/NFError.c 
     ${SOURCE_FOLDER}/NF/NFHashTable.c 
     ${SOURCE_FOLDER}/NF/NFMemory.c
+    ${SOURCE_FOLDER}/NF/NFString.c 
 )
 
 include_directories(Include) 

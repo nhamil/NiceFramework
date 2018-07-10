@@ -1,15 +1,17 @@
 #include <NF/NFArray.h> 
 #include <NF/NFError.h> 
 #include <NF/NFHashTable.h> 
+#include <NF/NFString.h> 
 
 #include <stdio.h> 
 
 int ArrayTest(void); 
 int HashTableTest(void); 
+int StringTest(void); 
 
 int main(int argc, char **argv) 
 {
-    return HashTableTest(); 
+    return StringTest(); 
 }
 
 void PrintArray(NFArrayConstRef list) 
@@ -131,7 +133,7 @@ int HashTableTest(void)
     printf("Putting values...\n"); 
 
     int i; 
-    for (i = 0; i < 3000000; i++) 
+    for (i = 0; i < 30000; i++) 
     {
         value = i * 2 + 1; 
         NFHashTablePut(table, &i, &value); 
@@ -148,4 +150,57 @@ int HashTableTest(void)
     PrintHashTableEntry(table, 123); 
 
     NFHashTableDestroy(table); 
+}
+
+int StringTest(void) 
+{
+    NFStringRef str = NFStringCreate("this is a test"); 
+    NFStringRef str2 = NFStringCreate("123.45"); 
+    NFStringRef substr = NFStringCreateSubstring(str, 2, 4); // "is i"
+    
+    printf("%s\n", NFStringCString(str)); 
+    printf("%s\n", NFStringCString(substr)); 
+
+    NFStringAppend(str, substr); // "this is a testis i" 
+
+    printf("%s\n", NFStringCString(str)); 
+
+    NFStringInsert(str, 1, str2); // "t123.45his is a testis i" 
+
+    printf("%s\n", NFStringCString(str)); 
+
+    NFStringRemove(str, 2, 1); 
+
+    printf("%s\n", NFStringCString(str)); // "t13.45his is a testis i" 
+
+    {
+        NFbool found; 
+        NFuint index = NFStringIndexOf(str, substr, &found); 
+
+        if (found) 
+        {
+            printf("Index: %d\n", index); 
+        }
+        else 
+        {
+            printf("Index not found\n"); 
+        }
+    }
+
+    printf("%d\n", NFStringToUInt(str, NULL)); // 0 
+    printf("%d\n", NFStringToUInt(str2, NULL)); // 0 
+
+    printf("%f\n", NFStringToDouble(str, NULL)); // 0
+    printf("%f\n", NFStringToDouble(str2, NULL)); // 123.45 
+
+    {
+        NFStringRef tmp = NFStringCreate("is iis i"); 
+        NFStringReplace(str, substr, tmp); // "t13.45hasdfasdfs a testasdfasdf" 
+        NFStringDestroy(tmp); 
+    }
+
+    printf("%s\n", NFStringCString(str)); 
+
+    NFStringDestroy(str); 
+    NFStringDestroy(substr); 
 }
