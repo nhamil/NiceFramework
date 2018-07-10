@@ -4,8 +4,6 @@
 #include "NF/NFFunc.h" 
 #include "NF/NFMemory.h" 
 
-#include <stdio.h> 
-
 typedef struct Entry Entry; 
 
 #define NF_START_BUCKETS (17) 
